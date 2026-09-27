@@ -38,7 +38,7 @@ if (command === 'deploy') {
 } else if (command === 'seal') {
     const config = readJson<Config>(configPath)
     const [file = '', ...inputs] = args
-    const record = { ...readJson<Record<string, unknown>>(file), ...(inputs.length ? { inputs } : {}) }
+    const record = { ...readJson<Record<string, unknown>>(file), ...(inputs.length ? { inputs: inputs.map(ref => ref.replace(/^0x/, '')) } : {}) }
     const ref = await upload(config, new TextEncoder().encode(JSON.stringify(record)))
     const [anchored] = await wallet(config.rpc).client.readContract({ address: config.contract, abi, functionName: 'anchoredAt', args: [ref] })
     if (!anchored) await send(config, 'anchor', [ref])
