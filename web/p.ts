@@ -125,5 +125,16 @@ try {
         '<footer>Anyone who has seen this QR can move this NFT. Never keep funds at its address.</footer>'
     ].join('')
 } catch (error) {
-    app.innerHTML = `<p class="notice">Could not read this bag: ${esc(error)}</p>`
+    const [idText = '', key = ''] = location.hash.slice(1).split('.')
+    const notice = (title: string, text: string) => `<p class="notice"><strong>${title}</strong><br>${text}</p>`
+    if (!idText && !key) {
+        app.innerHTML = notice('No bag to show yet. Go get one. They are yummy.', 'Scan the QR code on a bag to follow its fruit from the plant to your hands.')
+    } else if (!/^\d+$/.test(idText) || !/^[0-9a-f]{64}$/i.test(key)) {
+        app.innerHTML = notice('This link is incomplete', 'Scan the QR code on the bag again. The link may have been cut short when it was copied.')
+    } else {
+        console.error(error)
+        app.innerHTML =
+            notice("We couldn't check this bag right now", 'Check your connection and try again in a moment.') +
+            `<details><summary>Technical details</summary><pre>${esc(error)}</pre></details>`
+    }
 }
