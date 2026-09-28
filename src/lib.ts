@@ -1,8 +1,9 @@
 import { ChunkSplitter } from 'cafe-utility'
-import { bytesToHex, createPublicClient, createWalletClient, encodeAbiParameters, http, keccak256, parseAbi, parseAbiParameters, zeroHash, type Address, type Hex } from 'viem'
+import { bytesToHex, createPublicClient, createWalletClient, encodeAbiParameters, http, isAddress, isAddressEqual, keccak256, parseAbi, parseAbiParameters, zeroHash, type Address, type Hex } from 'viem'
 import { privateKeyToAccount, privateKeyToAddress } from 'viem/accounts'
+import { mainnet } from 'viem/chains'
 
-export type Config = { rpc: string; gateway: string; site: string; contract: Address; custody?: Address; signer?: Address; postage?: string }
+export type Config = { rpc: string; gateway: string; site: string; contract: Address; custody?: Address; signer?: Address; postage?: string; rpcs?: Record<string, string>; contracts?: Address[] }
 
 export const abi = parseAbi([
     'function anchor(bytes32 ref)',
@@ -59,12 +60,41 @@ export async function download(gateway: string, ref: Hex) {
 
 export const swarmHash = async (data: Uint8Array) => bytesToHex((await ChunkSplitter.root(data)).hash())
 
+export const chainIdOf = (rpc: string) => createPublicClient({ transport: http(rpc) }).getChainId()
+
+export const stickerUrl = (site: string, chainId: number, contract: Address, id: number, key: Hex) => `${site}#${chainId}:${contract}/${id}.${key.slice(2)}`
+
+// <chainId>:<contract>/<id>.<key>, or the first format, <id>.<key>, which takes the contract from the page config
+export function parseSticker(hash: string) {
+    const match = /^#?(?:(\d+):(0x[0-9a-fA-F]{40})\/)?(\d+)\.([0-9a-fA-F]{64})$/.exec(hash)
+    if (!match) return null
+    const [, chainId, contract, id = '', key = ''] = match
+    return { chainId: chainId ? Number(chainId) : null, contract: (contract ?? null) as Address | null, id: BigInt(id), key: `0x${key}` as Hex }
+}
+
+export class NotOfficial extends Error {}
+
+const rpcOf = (config: Config, chainId: number | null) => (chainId === null ? config.rpc : (config.rpcs?.[chainId] ?? config.rpc))
+
+async function isOfficial(config: Config, chainId: number, contract: Address) {
+    if ([config.contract, ...(config.contracts ?? [])].some(listed => isAddressEqual(listed, contract))) return true
+    if (chainId !== 1) return false
+    const client = createPublicClient({ chain: mainnet, transport: http(rpcOf(config, 1)) })
+    const listed = await client.getEnsText({ name: 'fairfooddata.eth', key: 'ffd.contract' }).catch(() => null)
+    return !!listed && isAddress(listed) && isAddressEqual(listed, contract)
+}
+
 export async function scan(url: string, config: Config) {
-    const [idText = '', key = ''] = new URL(url).hash.slice(1).split('.')
-    const id = BigInt(idText)
-    const sticker = privateKeyToAddress(`0x${key}`)
-    const client = createPublicClient({ transport: http(config.rpc) })
-    const contract = { address: config.contract, abi } as const
+    const parsed = parseSticker(new URL(url).hash)
+    if (!parsed) throw Error('not a sticker link')
+    const { id, key } = parsed
+    const sticker = privateKeyToAddress(key)
+    const client = createPublicClient({ transport: http(rpcOf(config, parsed.chainId)) })
+    const chainId = await client.getChainId()
+    if (parsed.chainId !== null && parsed.chainId !== chainId) throw Error(`no RPC for chain ${parsed.chainId}`)
+    const address = parsed.contract ?? config.contract
+    if (!(await isOfficial(config, chainId, address))) throw new NotOfficial(`contract ${address} is not listed by Fair Food Data`)
+    const contract = { address, abi } as const
     const run = await client.readContract({ ...contract, functionName: 'recordOf', args: [id] })
     const owner = await client.readContract({ ...contract, functionName: 'ownerOf', args: [id] }).catch(() => null)
     const events = []
@@ -82,7 +112,7 @@ export async function scan(url: string, config: Config) {
         queue.push(...(data.inputs ?? []).map(hex))
     }
     events.sort((a, b) => a.data.at.localeCompare(b.data.at))
-    const explorer = explorers[await client.getChainId()]
+    const explorer = explorers[chainId]
     const anchors = await Promise.all(
         events.map(async ({ block, ...e }) => {
             const logs = explorer && block ? await client.getContractEvents({ ...contract, eventName: 'Anchored', args: { ref: e.ref }, fromBlock: block, toBlock: block }).catch(() => []) : []
@@ -92,5 +122,5 @@ export async function scan(url: string, config: Config) {
     )
     const nft: 'not minted' | 'yours' | 'custody' | 'moved' =
         owner === null ? 'not minted' : owner === sticker ? 'yours' : owner === config.custody ? 'custody' : 'moved'
-    return { id: Number(id), sticker, run: run === zeroHash ? null : run, events: anchors, owner, nft }
+    return { id: Number(id), chainId, contract: address, sticker, run: run === zeroHash ? null : run, events: anchors, owner, nft }
 }

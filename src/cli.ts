@@ -5,7 +5,7 @@ import { dirname } from 'node:path'
 import { type Address, type Hex } from 'viem'
 import { generatePrivateKey, privateKeyToAddress } from 'viem/accounts'
 import { serve } from './gateway.ts'
-import { abi, scan, send, upload, wallet, type Config } from './lib.ts'
+import { abi, chainIdOf, scan, send, stickerUrl, upload, wallet, type Config } from './lib.ts'
 import { sealBatch, serveSealer, type Batch } from './sealer.ts'
 import { publishSite, siteUrl } from './site.ts'
 
@@ -27,11 +27,12 @@ if (command === 'deploy') {
 } else if (command === 'stickers') {
     const config = readJson<Config>(configPath)
     const [from, to] = args.map(Number) as [number, number]
+    const chainId = await chainIdOf(config.rpc)
     const list: Record<number, Address> = {}
     for (const id of Numbers.range(from, to)) {
         const key = generatePrivateKey()
         list[id] = privateKeyToAddress(key)
-        console.log(`${config.site}#${id}.${key.slice(2)}`)
+        console.log(stickerUrl(config.site, chainId, config.contract, id, key))
     }
     mkdirSync(dirname(stickersPath), { recursive: true })
     writeJson(stickersPath, list)
