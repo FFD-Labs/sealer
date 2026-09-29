@@ -1,0 +1,437 @@
+{
+  "schema": "ffd/batch/1.0",
+  "batch_id": "india-1/2026-09-25/1",
+  "env": "tst",
+  "site": "urn:bdf:site:india-1",
+  "created_at": "2026-09-25T12:00:00Z",
+  "signer": "0x0000000000000000000000000000000000000000",
+  "items": [
+    {
+      "kind": "record",
+      "ref": "9453028f36c902837518649285f13a6ab9a76e4fca0254341cca3f20dd96cf38",
+      "payload": {
+        "schema": "ffd/event/1.0",
+        "phase": "intake",
+        "kind": "declared",
+        "illustrative": true,
+        "at": "2026-10-01T05:30:00Z",
+        "site": "urn:bdf:site:india-1",
+        "plant_id": "REC/20261001/9021-1",
+        "version": 1,
+        "supersedes": null,
+        "supplier": "Cooperative Nashik 3",
+        "fruit": "mango",
+        "foodon": "http://purl.obolibrary.org/obo/FOODON_00003538",
+        "kg": 100,
+        "delivery_note": "DN-2610-0147",
+        "origin": "undeclared",
+        "epcis": {
+          "eventType": "ObjectEvent",
+          "action": "ADD",
+          "bizStep": "commissioning"
+        },
+        "standards": {
+          "epcis": "2.0",
+          "cbv": "2.0",
+          "senml": "RFC 8428",
+          "foodon": "2026-09-20",
+          "prov_o": "W3C 2013"
+        },
+        "sources": []
+      },
+      "signature": "0x0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "assign": null
+    },
+    {
+      "kind": "record",
+      "ref": "37c50aaa79baf3a4e43c11c791d7fc4321630ff4892a4bf7d8f2b82b725ca7be",
+      "payload": {
+        "schema": "ffd/event/1.0",
+        "phase": "cycle",
+        "kind": "measured",
+        "illustrative": true,
+        "at": "2026-10-04T01:10:00Z",
+        "site": "urn:bdf:site:india-1",
+        "plant_id": "5201",
+        "version": 1,
+        "supersedes": null,
+        "machine": "IND-L-1",
+        "start": "2026-10-02T03:30:00Z",
+        "end": "2026-10-04T01:10:00Z",
+        "recipe": "MANGO 8 MM",
+        "foodon_process": "http://purl.obolibrary.org/obo/FOODON_03470130",
+        "min_temperature_c": -38.2,
+        "min_pressure_pa": 21.3,
+        "kwh": 87.6,
+        "declared": {
+          "loads": [
+            {
+              "intake": "REC/20261001/9021-1",
+              "lot": "MG-011026",
+              "trays": 16,
+              "kg": 32
+            }
+          ],
+          "kg_out": 5.6,
+          "lot_out": "MG1-021026",
+          "moisture_pct": 2.4,
+          "aw": 0.21
+        },
+        "epcis": {
+          "eventType": "TransformationEvent",
+          "bizStep": "bdf:bizstep:freeze_drying_unloading"
+        },
+        "standards": {
+          "epcis": "2.0",
+          "cbv": "2.0",
+          "senml": "RFC 8428",
+          "foodon": "2026-09-20",
+          "prov_o": "W3C 2013"
+        },
+        "telemetry": null,
+        "sources": [],
+        "inputs": [
+          "9453028f36c902837518649285f13a6ab9a76e4fca0254341cca3f20dd96cf38"
+        ]
+      },
+      "signature": "0x0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "assign": null
+    },
+    {
+      "kind": "record",
+      "ref": "b27fc768ba2203a89a70332f22b8582dcd35ad5064e78108e16cf96b5ca9c1b5",
+      "payload": {
+        "schema": "ffd/event/1.0",
+        "phase": "packing",
+        "kind": "declared",
+        "illustrative": true,
+        "at": "2026-10-05T06:00:00Z",
+        "site": "urn:bdf:site:india-1",
+        "plant_id": "WH/MO/00057",
+        "version": 1,
+        "supersedes": null,
+        "bags": 10,
+        "bag_g": 20,
+        "kg_packed": 0.2,
+        "stickers": {
+          "from": 1,
+          "to": 10
+        },
+        "lot": "MG-1026",
+        "cycles": [
+          "5201"
+        ],
+        "epcis": {
+          "eventType": "AggregationEvent",
+          "action": "DELETE",
+          "bizStep": "disaggregating"
+        },
+        "standards": {
+          "epcis": "2.0",
+          "cbv": "2.0",
+          "senml": "RFC 8428",
+          "foodon": "2026-09-20",
+          "prov_o": "W3C 2013"
+        },
+        "sources": [],
+        "inputs": [
+          "37c50aaa79baf3a4e43c11c791d7fc4321630ff4892a4bf7d8f2b82b725ca7be"
+        ]
+      },
+      "signature": "0x0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "assign": {
+        "from": 1,
+        "to": 10
+      }
+    },
+    {
+      "kind": "record",
+      "ref": "16ba91bb176ab5f908278bc7957af21f79439d74814ac2142b03f09b62b4dd09",
+      "payload": {
+        "schema": "ffd/event/1.0",
+        "phase": "intake",
+        "kind": "declared",
+        "illustrative": true,
+        "at": "2026-10-04T05:00:00Z",
+        "site": "urn:bdf:site:india-1",
+        "plant_id": "REC/20261004/9034-1",
+        "version": 1,
+        "supersedes": null,
+        "supplier": "Cooperative Nashik 3",
+        "fruit": "mango",
+        "foodon": "http://purl.obolibrary.org/obo/FOODON_00003538",
+        "kg": 180,
+        "delivery_note": "DN-2610-0162",
+        "origin": "undeclared",
+        "epcis": {
+          "eventType": "ObjectEvent",
+          "action": "ADD",
+          "bizStep": "commissioning"
+        },
+        "standards": {
+          "epcis": "2.0",
+          "cbv": "2.0",
+          "senml": "RFC 8428",
+          "foodon": "2026-09-20",
+          "prov_o": "W3C 2013"
+        },
+        "sources": []
+      },
+      "signature": "0x0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "assign": null
+    },
+    {
+      "kind": "record",
+      "ref": "597ac727865051b390bca7c5dc261a7cf42cc57b6236bf4d8c1a673d22d355d4",
+      "payload": {
+        "schema": "ffd/event/1.0",
+        "phase": "cycle",
+        "kind": "measured",
+        "illustrative": true,
+        "at": "2026-10-07T00:40:00Z",
+        "site": "urn:bdf:site:india-1",
+        "plant_id": "5203",
+        "version": 1,
+        "supersedes": null,
+        "machine": "IND-L-1",
+        "start": "2026-10-05T03:00:00Z",
+        "end": "2026-10-07T00:40:00Z",
+        "recipe": "MANGO 8 MM",
+        "foodon_process": "http://purl.obolibrary.org/obo/FOODON_03470130",
+        "min_temperature_c": -37.9,
+        "min_pressure_pa": 22.7,
+        "kwh": 88.1,
+        "declared": {
+          "loads": [
+            {
+              "intake": "REC/20261004/9034-1",
+              "lot": "MG-041026",
+              "trays": 16,
+              "kg": 32
+            }
+          ],
+          "kg_out": 5.5,
+          "lot_out": "MG1-051026",
+          "moisture_pct": 2.6,
+          "aw": 0.23
+        },
+        "epcis": {
+          "eventType": "TransformationEvent",
+          "bizStep": "bdf:bizstep:freeze_drying_unloading"
+        },
+        "standards": {
+          "epcis": "2.0",
+          "cbv": "2.0",
+          "senml": "RFC 8428",
+          "foodon": "2026-09-20",
+          "prov_o": "W3C 2013"
+        },
+        "telemetry": null,
+        "sources": [],
+        "inputs": [
+          "16ba91bb176ab5f908278bc7957af21f79439d74814ac2142b03f09b62b4dd09"
+        ]
+      },
+      "signature": "0x0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "assign": null
+    },
+    {
+      "kind": "record",
+      "ref": "a269f3c769e64b91e7bc55b286b9fba9863695e3b0ee348b679ba8f493a5dd34",
+      "payload": {
+        "schema": "ffd/event/1.0",
+        "phase": "cycle",
+        "kind": "measured",
+        "illustrative": true,
+        "at": "2026-10-07T02:30:00Z",
+        "site": "urn:bdf:site:india-1",
+        "plant_id": "5204",
+        "version": 1,
+        "supersedes": null,
+        "machine": "IND-L-2",
+        "start": "2026-10-05T04:10:00Z",
+        "end": "2026-10-07T02:30:00Z",
+        "recipe": "MANGO 8 MM",
+        "foodon_process": "http://purl.obolibrary.org/obo/FOODON_03470130",
+        "min_temperature_c": -38.6,
+        "min_pressure_pa": 20,
+        "kwh": 86.4,
+        "declared": {
+          "loads": [
+            {
+              "intake": "REC/20261004/9034-1",
+              "lot": "MG-041026",
+              "trays": 16,
+              "kg": 32
+            }
+          ],
+          "kg_out": 5.4,
+          "lot_out": "MG2-051026",
+          "moisture_pct": 2.2,
+          "aw": 0.19
+        },
+        "epcis": {
+          "eventType": "TransformationEvent",
+          "bizStep": "bdf:bizstep:freeze_drying_unloading"
+        },
+        "standards": {
+          "epcis": "2.0",
+          "cbv": "2.0",
+          "senml": "RFC 8428",
+          "foodon": "2026-09-20",
+          "prov_o": "W3C 2013"
+        },
+        "telemetry": null,
+        "sources": [],
+        "inputs": [
+          "16ba91bb176ab5f908278bc7957af21f79439d74814ac2142b03f09b62b4dd09"
+        ]
+      },
+      "signature": "0x0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "assign": null
+    },
+    {
+      "kind": "record",
+      "ref": "796348e90b801d9182b6f18e5974fd326b4019e0426cff0b38fe3430ee342cff",
+      "payload": {
+        "schema": "ffd/event/1.0",
+        "phase": "packing",
+        "kind": "declared",
+        "illustrative": true,
+        "at": "2026-10-08T06:30:00Z",
+        "site": "urn:bdf:site:india-1",
+        "plant_id": "WH/MO/00063",
+        "version": 1,
+        "supersedes": null,
+        "bags": 10,
+        "bag_g": 20,
+        "kg_packed": 0.2,
+        "stickers": {
+          "from": 11,
+          "to": 20
+        },
+        "lot": "MG-1026",
+        "cycles": [
+          "5203",
+          "5204"
+        ],
+        "epcis": {
+          "eventType": "AggregationEvent",
+          "action": "DELETE",
+          "bizStep": "disaggregating"
+        },
+        "standards": {
+          "epcis": "2.0",
+          "cbv": "2.0",
+          "senml": "RFC 8428",
+          "foodon": "2026-09-20",
+          "prov_o": "W3C 2013"
+        },
+        "sources": [],
+        "inputs": [
+          "597ac727865051b390bca7c5dc261a7cf42cc57b6236bf4d8c1a673d22d355d4",
+          "a269f3c769e64b91e7bc55b286b9fba9863695e3b0ee348b679ba8f493a5dd34"
+        ]
+      },
+      "signature": "0x0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "assign": {
+        "from": 11,
+        "to": 20
+      }
+    },
+    {
+      "kind": "record",
+      "ref": "8a2b87f31e5c3305700eefb9213a395dbd132479e34426ebb2b2bc01fe55ba8e",
+      "payload": {
+        "schema": "ffd/event/1.0",
+        "phase": "transport",
+        "kind": "declared",
+        "illustrative": true,
+        "at": "2026-11-02T09:00:00Z",
+        "site": "urn:bdf:site:india-1",
+        "plant_id": null,
+        "version": 1,
+        "supersedes": null,
+        "origin": "urn:bdf:site:india-1",
+        "destination": "Devcon 8 venue, Mumbai",
+        "departure": "2026-10-30T04:00:00Z",
+        "arrival": "2026-11-02T09:00:00Z",
+        "carrier": "road courier",
+        "tracking": "TEST-SHIP-0001",
+        "packing": "WH/MO/00057",
+        "stickers": {
+          "from": 1,
+          "to": 10
+        },
+        "epcis": {
+          "eventType": "ObjectEvent",
+          "action": "OBSERVE",
+          "bizStep": "transporting"
+        },
+        "standards": {
+          "epcis": "2.0",
+          "cbv": "2.0",
+          "senml": "RFC 8428",
+          "foodon": "2026-09-20",
+          "prov_o": "W3C 2013"
+        },
+        "sources": [],
+        "inputs": [
+          "b27fc768ba2203a89a70332f22b8582dcd35ad5064e78108e16cf96b5ca9c1b5"
+        ]
+      },
+      "signature": "0x0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "assign": {
+        "from": 1,
+        "to": 10
+      }
+    },
+    {
+      "kind": "record",
+      "ref": "6e7dfb4030bc966f0c6dae1d91b9f91bc9c8e33c4f4ce5dfe34412cdaee866e3",
+      "payload": {
+        "schema": "ffd/event/1.0",
+        "phase": "transport",
+        "kind": "declared",
+        "illustrative": true,
+        "at": "2026-11-02T09:00:00Z",
+        "site": "urn:bdf:site:india-1",
+        "plant_id": null,
+        "version": 1,
+        "supersedes": null,
+        "origin": "urn:bdf:site:india-1",
+        "destination": "Devcon 8 venue, Mumbai",
+        "departure": "2026-10-30T04:00:00Z",
+        "arrival": "2026-11-02T09:00:00Z",
+        "carrier": "road courier",
+        "tracking": "TEST-SHIP-0001",
+        "packing": "WH/MO/00063",
+        "stickers": {
+          "from": 11,
+          "to": 20
+        },
+        "epcis": {
+          "eventType": "ObjectEvent",
+          "action": "OBSERVE",
+          "bizStep": "transporting"
+        },
+        "standards": {
+          "epcis": "2.0",
+          "cbv": "2.0",
+          "senml": "RFC 8428",
+          "foodon": "2026-09-20",
+          "prov_o": "W3C 2013"
+        },
+        "sources": [],
+        "inputs": [
+          "796348e90b801d9182b6f18e5974fd326b4019e0426cff0b38fe3430ee342cff"
+        ]
+      },
+      "signature": "0x0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "assign": {
+        "from": 11,
+        "to": 20
+      }
+    }
+  ]
+}

@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="theme-color" content="#0b0e14" />
+        <title>Fair Food Data · Your bag</title>
+        <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+        <style>
+            @font-face { font-family: 'Host Grotesk'; src: url('./fonts/host-grotesk-var.woff2') format('woff2-variations'); font-weight: 300 800; font-display: swap; }
+            @font-face { font-family: 'Spline Sans Mono'; src: url('./fonts/spline-sans-mono-var.woff2') format('woff2-variations'); font-weight: 300 700; font-display: swap; }
+            :root {
+                --bg: #0b0e14; --panel: #10151e; --line: #222b38; --line-soft: #161d27;
+                --grid: rgba(90, 190, 210, 0.05); --ink: #e9eef4; --ink-dim: #9aa7b5; --ink-faint: #76838f;
+                --wait: #e8c37a; --wait-line: #4a3d22; --wait-bg: rgba(232, 195, 122, 0.07);
+                --accent: #2cb3c9; --grad: linear-gradient(135deg, #1199a8, #00e676); --verified: #00e676; --bad: #ff6b6b;
+                --display: 'Host Grotesk', -apple-system, BlinkMacSystemFont, sans-serif; --mono: 'Spline Sans Mono', ui-monospace, Menlo, monospace;
+            }
+            * { box-sizing: border-box; margin: 0; }
+            body {
+                background: var(--bg); color: var(--ink); font: 16px/1.5 var(--display); min-height: 100vh;
+                background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+                background-size: 32px 32px;
+            }
+            a { color: var(--accent); }
+            .shell { max-width: 40rem; margin: 0 auto; padding: 0 1rem 3rem; }
+            nav { display: flex; align-items: center; gap: 0.6rem; padding: 1rem 0; border-bottom: 1px solid var(--line-soft); font-weight: 600; letter-spacing: -0.01em; }
+            nav img { width: 28px; height: 28px; }
+            .kicker { display: inline-flex; align-items: center; gap: 0.5rem; margin-top: 2rem; font: 0.68rem var(--mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-dim); }
+            .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--grad); }
+            h1 { font-weight: 500; font-size: clamp(2.2rem, 9vw, 3.2rem); letter-spacing: -0.03em; line-height: 1; margin-top: 0.8rem; }
+            h1 span { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+            .lede { color: var(--ink-dim); margin-top: 1rem; max-width: 46ch; }
+            .notice { margin-top: 1.5rem; padding: 0.8rem 1rem; border: 1px solid var(--wait-line); background: var(--wait-bg); color: var(--wait); border-radius: 3px; font-size: 0.9rem; }
+            ol { list-style: none; padding: 0; margin-top: 2rem; }
+            .step { position: relative; padding: 0 0 1.5rem 2.2rem; }
+            .step::before { content: ''; position: absolute; left: 0.55rem; top: 1.4rem; bottom: 0; width: 1px; background: var(--line); }
+            .step:last-child::before { display: none; }
+            .num { position: absolute; left: 0; top: 0.1rem; width: 1.15rem; height: 1.15rem; border-radius: 3px; background: var(--grad); }
+            .card { min-width: 0; background: var(--panel); border: 1px solid var(--line); border-radius: 3px; padding: 1rem; }
+            .stage { font: 0.64rem var(--mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-faint); }
+            h2 { font-size: 1.3rem; font-weight: 500; letter-spacing: -0.01em; margin: 0.2rem 0 0.4rem; }
+            .tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 0.4rem; }
+            .tag { font: 0.62rem var(--mono); letter-spacing: 0.08em; text-transform: uppercase; padding: 0.15rem 0.45rem; border: 1px solid var(--line); border-radius: 3px; color: var(--ink-dim); }
+            .tag.wait { border-color: var(--wait-line); color: var(--wait); }
+            .row { display: grid; grid-template-columns: 7rem minmax(0, 1fr); gap: 1rem; align-items: baseline; padding: 0.5rem 0; border-bottom: 1px solid var(--line-soft); }
+            .k { font: 0.64rem var(--mono); letter-spacing: 0.09em; text-transform: uppercase; color: var(--ink-faint); }
+            .v { font: 0.85rem var(--mono); text-align: right; font-variant-numeric: tabular-nums; word-break: break-word; }
+            .check { margin-top: 0.8rem; font: 0.78rem var(--mono); }
+            .check.ok { color: var(--verified); }
+            .check.bad { color: var(--bad); }
+            .links { display: flex; gap: 0.5rem; margin-top: 0.7rem; }
+            .btn { font: 0.66rem var(--mono); letter-spacing: 0.08em; text-transform: uppercase; text-decoration: none; padding: 0.4rem 0.7rem; border: 1px solid var(--line); border-radius: 3px; color: var(--ink); }
+            .btn:hover { border-color: var(--accent); color: var(--accent); }
+            details { margin-top: 0.6rem; font: 0.72rem var(--mono); color: var(--ink-faint); }
+            summary { cursor: pointer; }
+            pre { margin-top: 0.5rem; padding: 0.7rem; background: var(--bg); border: 1px solid var(--line-soft); white-space: pre-wrap; word-break: break-all; color: var(--ink-dim); }
+            code { word-break: break-all; }
+            .nft { margin-top: 0.5rem; }
+            .nft h2 span { color: var(--accent); }
+            footer { margin-top: 2rem; font-size: 0.8rem; color: var(--ink-faint); }
+        </style>
+    </head>
+    <body>
+        <div class="shell">
+            <nav><img src="./mark.svg" alt="" />Fair Food Data</nav>
+            <main id="app"><p class="kicker"><span class="dot"></span>Checking the records…</p></main>
+        </div>
+        <script type="module" src="./p.ts"></script>
+    </body>
+</html>

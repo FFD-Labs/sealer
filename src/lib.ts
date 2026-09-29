@@ -1,0 +1,96 @@
+import { ChunkSplitter } from 'cafe-utility'
+import { bytesToHex, createPublicClient, createWalletClient, encodeAbiParameters, http, keccak256, parseAbi, parseAbiParameters, zeroHash, type Address, type Hex } from 'viem'
+import { privateKeyToAccount, privateKeyToAddress } from 'viem/accounts'
+
+export type Config = { rpc: string; gateway: string; site: string; contract: Address; custody?: Address; signer?: Address; postage?: string }
+
+export const abi = parseAbi([
+    'function anchor(bytes32 ref)',
+    'function anchoredAt(bytes32 ref) view returns (uint64 at, uint64 block)',
+    'function assign(uint128 from, uint128 to, bytes32 ref)',
+    'function recordOf(uint256 id) view returns (bytes32)',
+    'function mint(uint256[] ids, address[] to)',
+    'function owner() view returns (address)',
+    'function setBaseURI(string uri)',
+    'function ownerOf(uint256 id) view returns (address)',
+    'function transferBatch(uint256[] ids, address[] to)',
+    'function transferBySig(uint256 id, address to, bytes signature)',
+    'function assigned(uint128 from, uint128 to, bytes32 ref) view returns (bool)',
+    'event Anchored(bytes32 indexed ref, uint64 at)'
+])
+
+export const transferDigest = (contract: Address, chainId: number, id: bigint, to: Address) =>
+    keccak256(encodeAbiParameters(parseAbiParameters('uint256, address, uint256, address'), [BigInt(chainId), contract, id, to]))
+
+export const signTransfer = (contract: Address, chainId: number, id: bigint, to: Address, key: Hex) =>
+    privateKeyToAccount(key).signMessage({ message: { raw: transferDigest(contract, chainId, id, to) } })
+
+const explorers: { [chainId: number]: string } = { 1: 'https://etherscan.io', 11155111: 'https://sepolia.etherscan.io' }
+
+export const hex = (ref: string) => (ref.startsWith('0x') ? ref : `0x${ref}`) as Hex
+
+export function wallet(rpc: string, key = process.env.PRIVATE_KEY as Hex) {
+    const account = privateKeyToAccount(key)
+    const transport = http(rpc)
+    return { wallet: createWalletClient({ account, transport }), client: createPublicClient({ transport }) }
+}
+
+export async function send(config: Config, functionName: 'anchor' | 'assign' | 'mint' | 'transferBatch', args: readonly unknown[], key?: Hex) {
+    const { wallet: w, client } = wallet(config.rpc, key)
+    const hash = await w.writeContract({ address: config.contract, abi, functionName, args, chain: null } as never)
+    const receipt = await client.waitForTransactionReceipt({ hash })
+    if (receipt.status !== 'success') throw Error(`${functionName} reverted`)
+    return hash
+}
+
+export async function upload(config: Config, data: Uint8Array<ArrayBuffer>): Promise<Hex> {
+    const stamp: Record<string, string> = config.postage ? { 'swarm-postage-batch-id': config.postage, 'swarm-pin': 'true' } : {}
+    const response = await fetch(`${config.gateway}/bytes`, { method: 'POST', body: data, headers: { 'Content-Type': 'application/octet-stream', ...stamp } })
+    if (!response.ok) throw Error(`upload failed: ${response.status}`)
+    const { reference } = (await response.json()) as { reference: string }
+    return `0x${reference}`
+}
+
+export async function download(gateway: string, ref: Hex) {
+    const response = await fetch(`${gateway}/bytes/${ref.slice(2)}`)
+    if (!response.ok) throw Error(`download failed: ${response.status}`)
+    return new Uint8Array(await response.arrayBuffer())
+}
+
+export const swarmHash = async (data: Uint8Array) => bytesToHex((await ChunkSplitter.root(data)).hash())
+
+export async function scan(url: string, config: Config) {
+    const [idText = '', key = ''] = new URL(url).hash.slice(1).split('.')
+    const id = BigInt(idText)
+    const sticker = privateKeyToAddress(`0x${key}`)
+    const client = createPublicClient({ transport: http(config.rpc) })
+    const contract = { address: config.contract, abi } as const
+    const run = await client.readContract({ ...contract, functionName: 'recordOf', args: [id] })
+    const owner = await client.readContract({ ...contract, functionName: 'ownerOf', args: [id] }).catch(() => null)
+    const events = []
+    const queue = run === zeroHash ? [] : [run]
+    const seen = new Set<Hex>()
+    while (queue.length) {
+        const ref = queue.shift()!
+        if (seen.has(ref)) continue
+        seen.add(ref)
+        const bytes = await download(config.gateway, ref)
+        const data = JSON.parse(new TextDecoder().decode(bytes)) as { at: string; inputs?: Hex[] } & Record<string, unknown>
+        const [anchored, block] = await client.readContract({ ...contract, functionName: 'anchoredAt', args: [ref] })
+        const at = anchored ? new Date(Number(anchored) * 1000).toISOString() : null
+        events.push({ ref, at, block, verified: at !== null && (await swarmHash(bytes)) === ref, data })
+        queue.push(...(data.inputs ?? []).map(hex))
+    }
+    events.sort((a, b) => a.data.at.localeCompare(b.data.at))
+    const explorer = explorers[await client.getChainId()]
+    const anchors = await Promise.all(
+        events.map(async ({ block, ...e }) => {
+            const logs = explorer && block ? await client.getContractEvents({ ...contract, eventName: 'Anchored', args: { ref: e.ref }, fromBlock: block, toBlock: block }).catch(() => []) : []
+            const tx = logs[0]?.transactionHash
+            return { ...e, tx: tx ? `${explorer}/tx/${tx}` : null, file: `${config.gateway}/bytes/${e.ref.slice(2)}` }
+        })
+    )
+    const nft: 'not minted' | 'yours' | 'custody' | 'moved' =
+        owner === null ? 'not minted' : owner === sticker ? 'yours' : owner === config.custody ? 'custody' : 'moved'
+    return { id: Number(id), sticker, run: run === zeroHash ? null : run, events: anchors, owner, nft }
+}

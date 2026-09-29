@@ -1,0 +1,20 @@
+{
+    "schema": "ffd/event/1.0",
+    "phase": "intake",
+    "kind": "declared",
+    "illustrative": true,
+    "at": "2026-10-01T05:30:00Z",
+    "site": "urn:bdf:site:india-1",
+    "plant_id": "REC/20261001/9021-1",
+    "version": 1,
+    "supersedes": null,
+    "supplier": "Cooperative Nashik 3",
+    "fruit": "mango",
+    "foodon": "http://purl.obolibrary.org/obo/FOODON_00003538",
+    "kg": 100.0,
+    "delivery_note": "DN-2610-0147",
+    "origin": "undeclared",
+    "epcis": { "eventType": "ObjectEvent", "action": "ADD", "bizStep": "commissioning" },
+    "standards": { "epcis": "2.0", "cbv": "2.0", "senml": "RFC 8428", "foodon": "2026-09-20", "prov_o": "W3C 2013" },
+    "sources": []
+}

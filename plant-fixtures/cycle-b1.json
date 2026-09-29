@@ -1,0 +1,30 @@
+{
+    "schema": "ffd/event/1.0",
+    "phase": "cycle",
+    "kind": "measured",
+    "illustrative": true,
+    "at": "2026-10-07T00:40:00Z",
+    "site": "urn:bdf:site:india-1",
+    "plant_id": "5203",
+    "version": 1,
+    "supersedes": null,
+    "machine": "IND-L-1",
+    "start": "2026-10-05T03:00:00Z",
+    "end": "2026-10-07T00:40:00Z",
+    "recipe": "MANGO 8 MM",
+    "foodon_process": "http://purl.obolibrary.org/obo/FOODON_03470130",
+    "min_temperature_c": -37.9,
+    "min_pressure_pa": 22.7,
+    "kwh": 88.1,
+    "declared": {
+        "loads": [{ "intake": "REC/20261004/9034-1", "lot": "MG-041026", "trays": 16, "kg": 32.0 }],
+        "kg_out": 5.5,
+        "lot_out": "MG1-051026",
+        "moisture_pct": 2.6,
+        "aw": 0.23
+    },
+    "epcis": { "eventType": "TransformationEvent", "bizStep": "bdf:bizstep:freeze_drying_unloading" },
+    "standards": { "epcis": "2.0", "cbv": "2.0", "senml": "RFC 8428", "foodon": "2026-09-20", "prov_o": "W3C 2013" },
+    "telemetry": null,
+    "sources": []
+}

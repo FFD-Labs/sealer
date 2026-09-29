@@ -1,0 +1,9 @@
+node_modules
+out
+cache
+dist
+data
+web/public/config.json
+example-data
+reference-website
+*.zip

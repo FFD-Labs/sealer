@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Fair Food Data">
+  <defs><linearGradient id="ffd-grad-dark" gradientUnits="userSpaceOnUse" x1="10" y1="10" x2="53" y2="53">
+    <stop offset="0" stop-color="#1199A8"/><stop offset="1" stop-color="#00E676"/></linearGradient></defs>
+  <g fill="url(#ffd-grad-dark)">
+    <rect x="10" y="10" width="13" height="13" rx="2"/>
+    <rect x="25" y="25" width="13" height="13" rx="2"/><rect x="40" y="25" width="13" height="13" rx="2"/>
+    <rect x="10" y="40" width="13" height="13" rx="2"/><rect x="25" y="40" width="13" height="13" rx="2"/>
+  </g>
+</svg>

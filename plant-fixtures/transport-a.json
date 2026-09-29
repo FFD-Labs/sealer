@@ -1,0 +1,22 @@
+{
+    "schema": "ffd/event/1.0",
+    "phase": "transport",
+    "kind": "declared",
+    "illustrative": true,
+    "at": "2026-11-02T09:00:00Z",
+    "site": "urn:bdf:site:india-1",
+    "plant_id": null,
+    "version": 1,
+    "supersedes": null,
+    "origin": "urn:bdf:site:india-1",
+    "destination": "Devcon 8 venue, Mumbai",
+    "departure": "2026-10-30T04:00:00Z",
+    "arrival": "2026-11-02T09:00:00Z",
+    "carrier": "road courier",
+    "tracking": "TEST-SHIP-0001",
+    "packing": "WH/MO/00057",
+    "stickers": { "from": 1, "to": 10 },
+    "epcis": { "eventType": "ObjectEvent", "action": "OBSERVE", "bizStep": "transporting" },
+    "standards": { "epcis": "2.0", "cbv": "2.0", "senml": "RFC 8428", "foodon": "2026-09-20", "prov_o": "W3C 2013" },
+    "sources": []
+}

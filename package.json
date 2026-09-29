@@ -1,0 +1,22 @@
+{
+  "name": "fairfooddata",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "forge build && tsc && vite build",
+    "cli": "tsx src/cli.ts",
+    "dev": "vite",
+    "test": "forge build && tsx --test test/e2e.ts"
+  },
+  "dependencies": {
+    "cafe-utility": "^36.3.1",
+    "viem": "^2.56.8"
+  },
+  "devDependencies": {
+    "@openzeppelin/contracts": "^5.6.1",
+    "@types/node": "^26.6.2",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.0"
+  }
+}
