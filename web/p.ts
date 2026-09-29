@@ -1,4 +1,4 @@
-import { scan, type Config } from '../src/lib.ts'
+import { NotOfficial, parseSticker, scan, type Config } from '../src/lib.ts'
 
 type Record = {
     phase: 'intake' | 'cycle' | 'packing' | 'transport'
@@ -125,5 +125,16 @@ try {
         '<footer>Anyone who has seen this QR can move this NFT. Never keep funds at its address.</footer>'
     ].join('')
 } catch (error) {
-    app.innerHTML = `<p class="notice">Could not read this bag: ${esc(error)}</p>`
+    const notice = (title: string, text: string) => `<p class="notice"><strong>${title}</strong><br>${text}</p>`
+    const details = `<details><summary>Technical details</summary><pre>${esc(error)}</pre></details>`
+    if (!location.hash.slice(1)) {
+        app.innerHTML = notice('No bag to show yet. Go get one. They are yummy.', 'Scan the QR code on a bag to follow its fruit from the plant to your hands.')
+    } else if (!parseSticker(location.hash)) {
+        app.innerHTML = notice('This link is incomplete', 'Scan the QR code on the bag again. The link may have been cut short when it was copied.')
+    } else if (error instanceof NotOfficial) {
+        app.innerHTML = notice('This is not a Fair Food Data bag', 'The QR code points to a contract that Fair Food Data has not published, so this page does not show it.') + details
+    } else {
+        console.error(error)
+        app.innerHTML = notice("We couldn't check this bag right now", 'Check your connection and try again in a moment.') + details
+    }
 }
