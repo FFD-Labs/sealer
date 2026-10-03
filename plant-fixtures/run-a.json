@@ -1,7 +1,6 @@
 {
     "schema": "ffd/event/1.0",
     "phase": "packing",
-    "kind": "declared",
     "illustrative": true,
     "at": "2026-10-05T06:00:00Z",
     "site": "urn:bdf:site:india-1",
@@ -16,5 +15,5 @@
     "cycles": ["5201"],
     "epcis": { "eventType": "AggregationEvent", "action": "DELETE", "bizStep": "disaggregating" },
     "standards": { "epcis": "2.0", "cbv": "2.0", "senml": "RFC 8428", "foodon": "2026-09-20", "prov_o": "W3C 2013" },
-    "sources": []
+    "documents": []
 }

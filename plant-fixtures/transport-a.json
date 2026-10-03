@@ -1,7 +1,6 @@
 {
     "schema": "ffd/event/1.0",
     "phase": "transport",
-    "kind": "declared",
     "illustrative": true,
     "at": "2026-11-02T09:00:00Z",
     "site": "urn:bdf:site:india-1",
@@ -18,5 +17,5 @@
     "stickers": { "from": 1, "to": 10 },
     "epcis": { "eventType": "ObjectEvent", "action": "OBSERVE", "bizStep": "transporting" },
     "standards": { "epcis": "2.0", "cbv": "2.0", "senml": "RFC 8428", "foodon": "2026-09-20", "prov_o": "W3C 2013" },
-    "sources": []
+    "documents": []
 }
