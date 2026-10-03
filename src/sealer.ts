@@ -5,12 +5,12 @@ import { createPublicClient, http, isAddressEqual, recoverMessageAddress, type A
 import { mainnet } from 'viem/chains'
 import { abi, hex, send, swarmHash, upload, type Config } from './lib.ts'
 
-type Payload = { inputs?: string[]; supersedes?: string | null; telemetry?: string | null; sources?: { payload: string }[] }
+type Payload = { inputs?: string[]; supersedes?: string | null; telemetry?: string | null; documents?: { ref: string }[] }
 type Item = { kind: 'record' | 'blob'; ref: string; signature: Hex; payload?: Payload; payload_base64?: string; assign?: { from: number; to: number } | null }
 export type Batch = { schema: string; batch_id: string; env: 'tst' | 'pro'; signer: Address; items: Item[] }
 type Result = { ref: string; status: 'sealed' | 'duplicate' | 'rejected'; code?: string; upload?: string; anchor_tx?: Hex; assign_tx?: Hex }
 
-const parents = (p: Payload) => [...(p.inputs ?? []), p.supersedes, p.telemetry, ...(p.sources ?? []).map(s => s.payload)].filter(r => r != null).map(hex)
+const parents = (p: Payload) => [...(p.inputs ?? []), p.supersedes, p.telemetry, ...(p.documents ?? []).map(d => d.ref)].filter(r => r != null).map(hex)
 
 export async function sealBatch(config: Config, batch: Batch, key: Hex) {
     const client = createPublicClient({ transport: http(config.rpc) })
