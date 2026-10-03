@@ -81,8 +81,8 @@ Runs the two end-to-end tests against a local Anvil chain: two lots from sticker
 
 ## Status
 
-Sepolia, phase 0: the Sealer runs on FFD's own laptop with FFD's keys and contract. Nine test records of the phase 0 format matched their reference hashes, twenty NFTs minted to custody, ten handed over, FFD's signed envelope accepted. Production follows on Ethereum mainnet before Devcon 8 (Mumbai, 3 to 6 November 2026).
+Sepolia, phase 2: the Sealer runs on FFD's own laptop with FFD's keys. On 3 Oct 2026 the nine test records of the phase 2 format went through `batch` from the Notary's signed envelope onto a new Sepolia contract (`0x240dfbca…`): nine `sealed` with the same references the Notary computed, twenty NFTs minted to custody, and the page republished. Phases 0 and 1 did the same with the earlier formats on their own contracts. Production follows on Ethereum mainnet before Devcon 8 (Mumbai, 3 to 6 November 2026).
 
 ## Test records
 
-`plant-fixtures/` holds the nine reference records, all marked `illustrative`, in the phase 2 format that freezes on 15 Oct 2026: no `kind` or `sources`, a flat cycle, `documents` in every record, and `sourcing` and `farms` in the intakes. Sealed in order, they must produce these references (checked offline; they go to a new Sepolia contract once phase 2 merges): intake-a `0xc2fcca6e…`, cycle-a `0xadc36224…`, run-a `0x74175d84…`, intake-b `0xb5eee1c8…`, cycle-b1 `0x6c3c02b4…`, cycle-b2 `0x011b7a97…`, run-b `0xcedba07d…`, transport-a `0xf41f2556…`, transport-b `0xa892dd42…`.
+`plant-fixtures/` holds the nine reference records, all marked `illustrative`, in the phase 2 format that freezes on 15 Oct 2026: no `kind` or `sources`, a flat cycle, `documents` in every record, and `sourcing` and `farms` in the intakes. Sealed in order, they must produce these references (sealed on the phase 2 Sepolia contract on 3 Oct 2026): intake-a `0xc2fcca6e…`, cycle-a `0xadc36224…`, run-a `0x74175d84…`, intake-b `0xb5eee1c8…`, cycle-b1 `0x6c3c02b4…`, cycle-b2 `0x011b7a97…`, run-b `0xcedba07d…`, transport-a `0xf41f2556…`, transport-b `0xa892dd42…`.
