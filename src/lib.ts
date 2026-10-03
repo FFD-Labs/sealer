@@ -121,6 +121,6 @@ export async function scan(url: string, config: Config) {
         })
     )
     const nft: 'not minted' | 'yours' | 'custody' | 'moved' =
-        owner === null ? 'not minted' : owner === sticker ? 'yours' : owner === config.custody ? 'custody' : 'moved'
+        owner === null ? 'not minted' : isAddressEqual(owner, sticker) ? 'yours' : config.custody && isAddress(config.custody) && isAddressEqual(owner, config.custody) ? 'custody' : 'moved'
     return { id: Number(id), chainId, contract: address, sticker, run: run === zeroHash ? null : run, events: anchors, owner, nft }
 }
