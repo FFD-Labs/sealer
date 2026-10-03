@@ -6,7 +6,7 @@ import { join } from 'node:path'
 import { after, test } from 'node:test'
 import { setTimeout } from 'node:timers/promises'
 import { generatePrivateKey, privateKeyToAccount, privateKeyToAddress } from 'viem/accounts'
-import { signTransfer, type Config } from '../src/lib.ts'
+import { signTransfer, swarmHash, type Config } from '../src/lib.ts'
 import type { Batch } from '../src/sealer.ts'
 
 const dir = mkdtempSync(join(tmpdir(), 'ffd-'))
@@ -161,4 +161,20 @@ test('notary batches through the sealing service', async () => {
     assert.deepEqual(phases(bag(1)), ['intake', 'cycle', 'packing', 'transport'])
     assert.deepEqual(phases(bag(15)), ['intake', 'cycle', 'cycle', 'packing', 'transport'])
     assert.ok(scan(bag(15)).events.every(e => e.verified))
+
+    // A document is a blob that its record names in documents[].ref: rejecting the blob rejects the record
+    const pdf = new TextEncoder().encode('%PDF-1.4 delivery note, names and prices covered')
+    const pdfRef = (await swarmHash(pdf)).slice(2)
+    const intake = { ...example.items[0]!.payload, documents: [{ name: 'delivery-note.pdf', type: 'application/pdf', ref: pdfRef }] }
+    const intakeRef = (await swarmHash(new TextEncoder().encode(JSON.stringify(intake)))).slice(2)
+    const withDocument = async (blobKey: `0x${string}`, n: number) => {
+        const file = join(dir, `documents-${n}.json`)
+        const blob = { kind: 'blob', ref: pdfRef, content_type: 'application/pdf', payload_base64: Buffer.from(pdf).toString('base64'), signature: await sign(blobKey, pdfRef) }
+        const record = { kind: 'record', ref: intakeRef, payload: intake, signature: await sign(signer, intakeRef), assign: null }
+        writeFileSync(file, JSON.stringify({ ...batch, batch_id: `india-1/2026-10-02/${n}`, items: [blob, record] }))
+        return statuses(JSON.parse(cli('batch', file)))
+    }
+    assert.deepEqual(await withDocument(generatePrivateKey(), 1), ['signature_invalid', 'parent_rejected'])
+    assert.deepEqual(await withDocument(signer, 2), ['sealed', 'sealed'])
+    assert.deepEqual(await withDocument(signer, 3), ['sealed', 'duplicate'])
 })

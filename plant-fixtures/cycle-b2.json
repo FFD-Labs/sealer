@@ -1,7 +1,6 @@
 {
     "schema": "ffd/event/1.0",
     "phase": "cycle",
-    "kind": "measured",
     "illustrative": true,
     "at": "2026-10-07T02:30:00Z",
     "site": "urn:bdf:site:india-1",
@@ -16,15 +15,13 @@
     "min_temperature_c": -38.6,
     "min_pressure_pa": 20.0,
     "kwh": 86.4,
-    "declared": {
-        "loads": [{ "intake": "REC/20261004/9034-1", "lot": "MG-041026", "trays": 16, "kg": 32.0 }],
-        "kg_out": 5.4,
-        "lot_out": "MG2-051026",
-        "moisture_pct": 2.2,
-        "aw": 0.19
-    },
+    "loads": [{ "intake": "REC/20261004/9034-1", "lot": "MG-041026", "trays": 16, "kg": 32.0 }],
+    "kg_out": 5.4,
+    "lot_out": "MG2-051026",
+    "moisture_pct": 2.2,
+    "aw": 0.19,
     "epcis": { "eventType": "TransformationEvent", "bizStep": "bdf:bizstep:freeze_drying_unloading" },
     "standards": { "epcis": "2.0", "cbv": "2.0", "senml": "RFC 8428", "foodon": "2026-09-20", "prov_o": "W3C 2013" },
     "telemetry": null,
-    "sources": []
+    "documents": []
 }

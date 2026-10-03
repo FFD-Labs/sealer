@@ -1,8 +1,9 @@
 import { NotOfficial, parseSticker, scan, type Config } from '../src/lib.ts'
 
+type Farm = { zone: string | null; country: string | null; variety: string | null; harvested: string | null; kg: number | null }
+
 type Record = {
     phase: 'intake' | 'cycle' | 'packing' | 'transport'
-    kind?: 'measured' | 'declared'
     illustrative?: boolean
     version?: number
     at: string
@@ -10,7 +11,8 @@ type Record = {
     fruit?: string
     kg?: number
     supplier?: string
-    origin?: string
+    sourcing?: string
+    farms?: Farm[]
     delivery_note?: string | null
     machine?: string
     start?: string
@@ -18,16 +20,20 @@ type Record = {
     min_temperature_c?: number
     min_pressure_pa?: number
     kwh?: number
-    declared?: { loads?: { trays: number; kg: number }[]; kg_out?: number; moisture_pct?: number | null }
+    loads?: { trays: number | null; kg: number }[]
+    kg_out?: number | null
+    moisture_pct?: number | null
     bags?: number
     bag_g?: number
     stickers?: { from: number; to: number }
     lot?: string
+    origin?: string
     destination?: string
     departure?: string
     arrival?: string
     carrier?: string | null
     tracking?: string | null
+    documents?: { name: string; type: string; ref: string }[]
 }
 
 const app = document.getElementById('app')!
@@ -37,24 +43,46 @@ const date = (iso: string) =>
 const day = (iso: string) => new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' })
 const place = (value = '') => (value.startsWith('urn:bdf:site:') ? `Plant ${value.split(':').pop()}` : value)
 const hours = (from = '', to = '') => `${Math.round((Date.parse(to) - Date.parse(from)) / 36e5)} h`
-const sum = (list: { trays: number; kg: number }[] = [], key: 'trays' | 'kg') => list.reduce((total, load) => total + load[key], 0)
-const origins: { [key: string]: string } = { first_hand: 'Bought as usual', second_grade: 'Second grade', rescued: 'Rescued surplus', undeclared: 'Not stated' }
+const sum = (list: { trays: number | null; kg: number }[], key: 'trays' | 'kg') => list.reduce((total, load) => total + (load[key] ?? 0), 0)
+// Kilos to 3 decimals, like every kg in a record; trays only when every load says how many
+const loaded = (loads: { trays: number | null; kg: number }[] | null = []) =>
+    loads?.length ? `${Number(sum(loads, 'kg').toFixed(3))} kg${loads.every(load => load.trays != null) ? ` on ${sum(loads, 'trays')} trays` : ''}` : null
+const sourcings: { [key: string]: string } = { first_hand: 'Bought as usual', second_grade: 'Second grade', rescued: 'Rescued surplus', undeclared: 'Not stated' }
+const country = (code: string) => {
+    try {
+        return new Intl.DisplayNames(['en'], { type: 'region' }).of(code) ?? code
+    } catch {
+        return code
+    }
+}
+// One line per farm or plantation, leaving out what is not known
+const farm = (f: Farm) =>
+    [[f.zone, f.country && country(f.country)].filter(Boolean).join(', '), f.variety, f.harvested && `harvested ${day(f.harvested)}`, f.kg != null && `${f.kg} kg`]
+        .filter(Boolean)
+        .join(' · ') || null
 
 const steps = {
     intake: (r: Record) => ({
         title: `${(r.fruit ?? 'fruit').replace(/^./, c => c.toUpperCase())} received`,
-        rows: [['Weight', `${r.kg} kg`], ['Supplier', r.supplier], ['Origin', origins[r.origin ?? '']], ['Delivery note', r.delivery_note], ['Plant lot', r.plant_id]]
+        rows: [
+            ['Weight', `${r.kg} kg`],
+            ['Supplier', r.supplier],
+            ['Sourcing', sourcings[r.sourcing ?? '']],
+            ...(r.farms ?? []).map(f => ['Origin', farm(f)]),
+            ['Delivery note', r.delivery_note],
+            ['Plant lot', r.plant_id]
+        ]
     }),
     cycle: (r: Record) => ({
         title: 'Freeze-dried',
         rows: [
             ['Machine', r.machine],
             ['Duration', hours(r.start, r.end)],
-            ['Loaded', `${sum(r.declared?.loads, 'kg')} kg on ${sum(r.declared?.loads, 'trays')} trays`],
-            ['Dried out', r.declared?.kg_out != null ? `${r.declared.kg_out} kg` : null],
+            ['Loaded', loaded(r.loads)],
+            ['Dried out', r.kg_out != null ? `${r.kg_out} kg` : null],
             ['Coldest', r.min_temperature_c != null ? `${r.min_temperature_c} °C` : null],
             ['Lowest pressure', r.min_pressure_pa != null ? `${r.min_pressure_pa} Pa` : null],
-            ['Moisture left', r.declared?.moisture_pct != null ? `${r.declared.moisture_pct} %` : null],
+            ['Moisture left', r.moisture_pct != null ? `${r.moisture_pct} %` : null],
             ['Energy', r.kwh != null ? `${r.kwh} kWh` : null],
             ['Cycle', r.plant_id]
         ]
@@ -100,14 +128,14 @@ try {
         '<ol>',
         ...records.map(({ record, ref, at, verified, tx, file }, i) => {
             const { title, rows } = steps[record.phase](record)
+            const tags = [
+                record.illustrative ? '<span class="tag wait">Illustrative</span>' : '',
+                (record.version ?? 1) > 1 ? `<span class="tag wait">Correction v${record.version}</span>` : ''
+            ].join('')
             return `<li class="step"><span class="num"></span><div class="card">
                 <p class="stage">${String(i + 1).padStart(2, '0')} · ${esc(record.phase)} · ${day(record.at)}</p>
                 <h2>${esc(title)}</h2>
-                <div class="tags">
-                    <span class="tag">${record.kind === 'measured' ? 'Measured by machine' : 'Typed by staff'}</span>
-                    ${record.illustrative ? '<span class="tag wait">Illustrative</span>' : ''}
-                    ${(record.version ?? 1) > 1 ? `<span class="tag wait">Correction v${record.version}</span>` : ''}
-                </div>
+                ${tags && `<div class="tags">${tags}</div>`}
                 ${rows
                     .filter(([, value]) => value != null && value !== '')
                     .map(([key, value]) => `<div class="row"><span class="k">${esc(key)}</span><span class="v">${esc(value)}</span></div>`)
